@@ -8,7 +8,7 @@ already available in most package managers)
 ## Install
 
 ```bash
-luarocks install 
+luarocks install https://luarocks.org/manifests/leafo/geoip-dev-1.rockspec
 ```
 
 ## Reference
