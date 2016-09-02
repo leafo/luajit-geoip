@@ -1,9 +1,9 @@
 
 # LuaJIT bindings to the C MaxMind GeoIP library
 
-In order to use this library you'll need luajit, libGeoIP, and some
-geoip databases installed.
-
+In order to use this library you'll need luajit, libGeoIP, and some geoip
+databases installed. (Note: libGeoIP is the older C library, that should be
+already available in most package managers)
 
 ## Install
 
@@ -19,9 +19,8 @@ The module is named `geoip`
 local geoip = require "geoip"
 ```
 
-GeoIP has support for many different database types. At the moment, this librar
-will automatically load the databases available in the system location when
-first trying to look up an address.
+GeoIP has support for many different database types.  The available lookup
+databases are automatically loaded from the system location.
 
 Only the country and ASNUM databases are supported. Feel free to create a pull
 request with support for more.
