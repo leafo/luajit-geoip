@@ -1,7 +1,3 @@
-
-
-NUM_DB_TYPES  = 38 + 1
-
 ffi = require "ffi"
 bit = require "bit"
 
@@ -49,9 +45,7 @@ ffi.cdef [[
 
 lib = ffi.load "GeoIP"
 
-ip = "85.17.20.205"
-
-dbs = {
+DATABASE_TYPES = {
   lib.GEOIP_COUNTRY_EDITION
   lib.GEOIP_ASNUM_EDITION
 }
@@ -64,22 +58,43 @@ country_by_id = (gi, id) ->
   country = ffi.string lib.GeoIP_country_name_by_id gi, id
   code, country
 
-for i in *dbs
-  available = 1 == lib.GeoIP_db_avail(i)
-  continue unless available
-  gi = lib.GeoIP_open_type i, bit.bor lib.GEOIP_STANDARD, lib.GEOIP_SILENCE
-  continue if gi == nil
-  ffi.gc gi, ffi.GeoIP_delete
-  lib.GeoIP_set_charset gi, lib.GEOIP_CHARSET_UTF8
 
-  switch i
-    when lib.GEOIP_COUNTRY_EDITION
-      print "counrty"
-      cid = lib.GeoIP_id_by_addr gi, ip
-      print country_by_id gi, cid
-    when lib.GEOIP_ASNUM_EDITION
-      print "asnum"
-      res = ffi.string lib.GeoIP_name_by_addr gi, ip
-      print res
+class GeoIP
+  new: =>
 
+  load_databases: (mode=lib.GEOIP_STANDARD) =>
+    return if @databases
+    @databases = for i in *dbs
+      continue unless 1 == lib.GeoIP_db_avail(i)
+
+      gi = lib.GeoIP_open_type i, bit.bor mode, lib.GEOIP_SILENCE
+      continue if gi == nil
+      ffi.gc gi, ffi.GeoIP_delete
+      lib.GeoIP_set_charset gi, lib.GEOIP_CHARSET_UTF8
+
+      {
+        type: i
+        :gi
+      }
+
+    true
+
+  lookup_addr: (ip) =>
+    @load_databases!
+
+    out = {}
+    for {:type, :gi} in @databases
+      switch i
+        when lib.GEOIP_COUNTRY_EDITION
+          cid = lib.GeoIP_id_by_addr gi, ip
+          out.country_code, out.country_name = country_by_id gi, cid
+        when lib.GEOIP_ASNUM_EDITION
+          out.asnum = ffi.string lib.GeoIP_name_by_addr gi, ip
+
+    out
+
+{
+  :GeoIP
+  lookup_addr: GeoIP!\lookup_addr
+}
 
