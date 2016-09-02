@@ -50,10 +50,18 @@ DATABASE_TYPES = {
   lib.GEOIP_ASNUM_EDITION
 }
 
+CACHE_TYPES = {
+  standard: lib.GEOIP_STANDARD
+  memory: lib.GEOIP_MEMORY_CACHE
+  check: lib.GEOIP_CHECK_CACHE
+  index: lib.GEOIP_INDEX_CACHE
+}
+
 class GeoIP
   new: =>
 
   load_databases: (mode=lib.GEOIP_STANDARD) =>
+    mode = CACHE_TYPES[mode] or mode
     return if @databases
     @databases = for i in *DATABASE_TYPES
       continue unless 1 == lib.GeoIP_db_avail(i)

@@ -45,6 +45,12 @@ local DATABASE_TYPES = {
   lib.GEOIP_COUNTRY_EDITION,
   lib.GEOIP_ASNUM_EDITION
 }
+local CACHE_TYPES = {
+  standard = lib.GEOIP_STANDARD,
+  memory = lib.GEOIP_MEMORY_CACHE,
+  check = lib.GEOIP_CHECK_CACHE,
+  index = lib.GEOIP_INDEX_CACHE
+}
 local GeoIP
 do
   local _class_0
@@ -53,6 +59,7 @@ do
       if mode == nil then
         mode = lib.GEOIP_STANDARD
       end
+      mode = CACHE_TYPES[mode] or mode
       if self.databases then
         return 
       end

@@ -49,5 +49,27 @@ The structure of the return value looks like this:
 }
 ```
 
+### Controlling database caching
 
+You can control how the databases are loaded by manually instantiating a
+`GeoIP` object and calling the `load_databases` method directly. `lookup_addr`
+will automatically load databases only if they haven't been loaded yet.
+
+```lua
+local geoip = require("geoip")
+
+local gi = geoip.GeoIP()
+gi:load_databases("memory")
+
+local res = gi:lookup_addr("8.8.8.8")
+```
+
+> By default the STANDARD mode is used, which reads from disk for each lookup
+
+
+# Contact
+
+Author: Leaf Corcoran (leafo) ([@moonscript](http://twitter.com/moonscript))  
+Email: leafot@gmail.com  
+Homepage: <http://leafo.net>  
 
