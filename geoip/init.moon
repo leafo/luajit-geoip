@@ -50,21 +50,12 @@ DATABASE_TYPES = {
   lib.GEOIP_ASNUM_EDITION
 }
 
-country_by_id = (gi, id) ->
-  if id < 0 or id >= lib.GeoIP_num_countries!
-    return
-
-  code = ffi.string lib.GeoIP_code_by_id id
-  country = ffi.string lib.GeoIP_country_name_by_id gi, id
-  code, country
-
-
 class GeoIP
   new: =>
 
   load_databases: (mode=lib.GEOIP_STANDARD) =>
     return if @databases
-    @databases = for i in *dbs
+    @databases = for i in *DATABASE_TYPES
       continue unless 1 == lib.GeoIP_db_avail(i)
 
       gi = lib.GeoIP_open_type i, bit.bor mode, lib.GEOIP_SILENCE
@@ -79,19 +70,27 @@ class GeoIP
 
     true
 
+  country_by_id: (gi, id) =>
+    if id < 0 or id >= lib.GeoIP_num_countries!
+      return
+
+    code = ffi.string lib.GeoIP_code_by_id id
+    country = ffi.string lib.GeoIP_country_name_by_id gi, id
+    code, country
+
   lookup_addr: (ip) =>
     @load_databases!
 
     out = {}
-    for {:type, :gi} in @databases
-      switch i
+    for {:type, :gi} in *@databases
+      switch type
         when lib.GEOIP_COUNTRY_EDITION
           cid = lib.GeoIP_id_by_addr gi, ip
-          out.country_code, out.country_name = country_by_id gi, cid
+          out.country_code, out.country_name = @country_by_id gi, cid
         when lib.GEOIP_ASNUM_EDITION
           out.asnum = ffi.string lib.GeoIP_name_by_addr gi, ip
 
-    out
+    out if next out
 
 {
   :GeoIP

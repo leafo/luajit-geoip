@@ -45,15 +45,6 @@ local DATABASE_TYPES = {
   lib.GEOIP_COUNTRY_EDITION,
   lib.GEOIP_ASNUM_EDITION
 }
-local country_by_id
-country_by_id = function(gi, id)
-  if id < 0 or id >= lib.GeoIP_num_countries() then
-    return 
-  end
-  local code = ffi.string(lib.GeoIP_code_by_id(id))
-  local country = ffi.string(lib.GeoIP_country_name_by_id(gi, id))
-  return code, country
-end
 local GeoIP
 do
   local _class_0
@@ -68,11 +59,10 @@ do
       do
         local _accum_0 = { }
         local _len_0 = 1
-        local _list_0 = dbs
-        for _index_0 = 1, #_list_0 do
+        for _index_0 = 1, #DATABASE_TYPES do
           local _continue_0 = false
           repeat
-            local i = _list_0[_index_0]
+            local i = DATABASE_TYPES[_index_0]
             if not (1 == lib.GeoIP_db_avail(i)) then
               _continue_0 = true
               break
@@ -100,21 +90,33 @@ do
       end
       return true
     end,
+    country_by_id = function(self, gi, id)
+      if id < 0 or id >= lib.GeoIP_num_countries() then
+        return 
+      end
+      local code = ffi.string(lib.GeoIP_code_by_id(id))
+      local country = ffi.string(lib.GeoIP_country_name_by_id(gi, id))
+      return code, country
+    end,
     lookup_addr = function(self, ip)
       self:load_databases()
       local out = { }
-      for _des_0 in self.databases do
+      local _list_0 = self.databases
+      for _index_0 = 1, #_list_0 do
+        local _des_0 = _list_0[_index_0]
         local type, gi
         type, gi = _des_0.type, _des_0.gi
-        local _exp_0 = i
+        local _exp_0 = type
         if lib.GEOIP_COUNTRY_EDITION == _exp_0 then
           local cid = lib.GeoIP_id_by_addr(gi, ip)
-          out.country_code, out.country_name = country_by_id(gi, cid)
+          out.country_code, out.country_name = self:country_by_id(gi, cid)
         elseif lib.GEOIP_ASNUM_EDITION == _exp_0 then
           out.asnum = ffi.string(lib.GeoIP_name_by_addr(gi, ip))
         end
       end
-      return out
+      if next(out) then
+        return out
+      end
     end
   }
   _base_0.__index = _base_0
