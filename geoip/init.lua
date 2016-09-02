@@ -94,8 +94,13 @@ do
       if id < 0 or id >= lib.GeoIP_num_countries() then
         return 
       end
-      local code = ffi.string(lib.GeoIP_code_by_id(id))
-      local country = ffi.string(lib.GeoIP_country_name_by_id(gi, id))
+      local code = lib.GeoIP_code_by_id(id)
+      local country = lib.GeoIP_country_name_by_id(gi, id)
+      code = code ~= nil and ffi.string(code) or nil
+      country = country ~= nil and ffi.string(country) or nil
+      if code == "--" then
+        code = nil
+      end
       return code, country
     end,
     lookup_addr = function(self, ip)
@@ -103,15 +108,27 @@ do
       local out = { }
       local _list_0 = self.databases
       for _index_0 = 1, #_list_0 do
-        local _des_0 = _list_0[_index_0]
-        local type, gi
-        type, gi = _des_0.type, _des_0.gi
-        local _exp_0 = type
-        if lib.GEOIP_COUNTRY_EDITION == _exp_0 then
-          local cid = lib.GeoIP_id_by_addr(gi, ip)
-          out.country_code, out.country_name = self:country_by_id(gi, cid)
-        elseif lib.GEOIP_ASNUM_EDITION == _exp_0 then
-          out.asnum = ffi.string(lib.GeoIP_name_by_addr(gi, ip))
+        local _continue_0 = false
+        repeat
+          local _des_0 = _list_0[_index_0]
+          local type, gi
+          type, gi = _des_0.type, _des_0.gi
+          local _exp_0 = type
+          if lib.GEOIP_COUNTRY_EDITION == _exp_0 then
+            local cid = lib.GeoIP_id_by_addr(gi, ip)
+            out.country_code, out.country_name = self:country_by_id(gi, cid)
+          elseif lib.GEOIP_ASNUM_EDITION == _exp_0 then
+            local asnum = lib.GeoIP_name_by_addr(gi, ip)
+            if asnum == nil then
+              _continue_0 = true
+              break
+            end
+            out.asnum = ffi.string(asnum)
+          end
+          _continue_0 = true
+        until true
+        if not _continue_0 then
+          break
         end
       end
       if next(out) then

@@ -74,8 +74,13 @@ class GeoIP
     if id < 0 or id >= lib.GeoIP_num_countries!
       return
 
-    code = ffi.string lib.GeoIP_code_by_id id
-    country = ffi.string lib.GeoIP_country_name_by_id gi, id
+    code = lib.GeoIP_code_by_id id
+    country = lib.GeoIP_country_name_by_id gi, id
+
+    code = code != nil and ffi.string(code) or nil
+    country = country != nil and ffi.string(country) or nil
+    code = nil if code == "--"
+
     code, country
 
   lookup_addr: (ip) =>
@@ -88,7 +93,9 @@ class GeoIP
           cid = lib.GeoIP_id_by_addr gi, ip
           out.country_code, out.country_name = @country_by_id gi, cid
         when lib.GEOIP_ASNUM_EDITION
-          out.asnum = ffi.string lib.GeoIP_name_by_addr gi, ip
+          asnum = lib.GeoIP_name_by_addr gi, ip
+          continue if asnum == nil
+          out.asnum = ffi.string asnum
 
     out if next out
 
