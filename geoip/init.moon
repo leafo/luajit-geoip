@@ -1,5 +1,8 @@
+VERSION = "1.0.0"
+
 ffi = require "ffi"
 bit = require "bit"
+
 
 ffi.cdef [[
   typedef struct GeoIP {} GeoIP;
@@ -13,9 +16,9 @@ ffi.cdef [[
     GEOIP_SILENCE = 16,
   } GeoIPOptions;
 
-
   typedef enum {
     GEOIP_COUNTRY_EDITION = 1,
+    GEOIP_CITY_EDITION_REV1 = 2,
     GEOIP_ASNUM_EDITION = 9,
   } GeoIPDBTypes;
 
@@ -110,5 +113,6 @@ class GeoIP
 {
   :GeoIP
   lookup_addr: GeoIP!\lookup_addr
+  :VERSION
 }
 

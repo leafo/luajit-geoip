@@ -1,3 +1,4 @@
+local VERSION = "1.0.0"
 local ffi = require("ffi")
 local bit = require("bit")
 ffi.cdef([[  typedef struct GeoIP {} GeoIP;
@@ -11,9 +12,9 @@ ffi.cdef([[  typedef struct GeoIP {} GeoIP;
     GEOIP_SILENCE = 16,
   } GeoIPOptions;
 
-
   typedef enum {
     GEOIP_COUNTRY_EDITION = 1,
+    GEOIP_CITY_EDITION_REV1 = 2,
     GEOIP_ASNUM_EDITION = 9,
   } GeoIPDBTypes;
 
@@ -167,5 +168,6 @@ return {
     return function(...)
       return _fn_0(_base_0, ...)
     end
-  end)()
+  end)(),
+  VERSION = VERSION
 }

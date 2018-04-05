@@ -4,7 +4,7 @@ import lookup_addr from require "geoip"
 describe "geoip", ->
   it "looks up address", ->
     assert.same {
-      asnum: "AS15169 Google Inc."
+      asnum: "AS15169 Google LLC"
       country_code: "US"
       country_name: "United States"
     }, lookup_addr "8.8.8.8"
