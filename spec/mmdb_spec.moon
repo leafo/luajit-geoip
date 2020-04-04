@@ -1,0 +1,121 @@
+
+country_db = "/usr/share/GeoIP/GeoLite2-Country.mmdb"
+city_db = "/usr/share/GeoIP/GeoLite2-City.mmdb"
+asnum_db = "/usr/share/GeoIP/GeoLite2-ASN.mmdb"
+
+mmdb = require "geoip.mmdb"
+
+describe "mmdb", ->
+  describe "asnum_db", ->
+    local db
+    before_each ->
+      db = assert mmdb.load_database asnum_db
+
+    it "looks up address", ->
+      out = assert db\lookup "1.1.1.1"
+      assert.same {
+        autonomous_system_organization: "Cloudflare, Inc."
+        autonomous_system_number: 13335
+      }, out
+
+    it "looks up localhost", ->
+      assert.same {nil, "failed to find entry"}, {db\lookup "127.0.0.1"}
+
+    it "looks up invalid address", ->
+      assert.same {
+        nil, "gai error: Name or service not known"
+      }, {db\lookup "efjlewfk"}
+
+    it "looks up ipv6", ->
+      assert.same {
+        autonomous_system_number: 15169
+        autonomous_system_organization: "Google LLC"
+      }, db\lookup "2001:4860:4860::8888"
+
+  describe "country_db", ->
+    local db
+    before_each ->
+      db = assert mmdb.load_database country_db
+
+    it "looks up address", ->
+      out = assert db\lookup "8.8.8.8"
+      assert.same {
+        continent: {
+          code: 'NA'
+          geoname_id: 6255149
+          names: {
+            "de": 'Nordamerika'
+            "en": 'North America'
+            "es": 'Norteamérica'
+            "fr": 'Amérique du Nord'
+            "ja": '北アメリカ'
+            "pt-BR": 'América do Norte'
+            "ru": 'Северная Америка'
+            "zh-CN": '北美洲'
+          }
+        }
+        country: {
+          geoname_id: 6252001
+          iso_code: 'US'
+          names: {
+            "de": 'USA'
+            "en": 'United States'
+            "es": 'Estados Unidos'
+            "fr": 'États-Unis'
+            "ja": 'アメリカ合衆国'
+            "pt-BR": 'Estados Unidos'
+            "ru": 'США'
+            "zh-CN": '美国'
+          }
+        }
+        registered_country: {
+          geoname_id: 6252001
+          iso_code: 'US'
+          names: {
+            "de": 'USA'
+            "en": 'United States'
+            "es": 'Estados Unidos'
+            "fr": 'États-Unis'
+            "ja": 'アメリカ合衆国'
+            "pt-BR": 'Estados Unidos'
+            "ru": 'США'
+            "zh-CN": '美国'
+          }
+        }
+      }, out
+
+  describe "city_db", ->
+    local db
+    before_each ->
+      db = assert mmdb.load_database city_db
+
+    it "looks up address", ->
+      out = assert db\lookup "1.1.1.1"
+      assert.same {
+        accuracy_radius: 1000
+        longitude: 143.2104
+        latitude: -33.494
+        time_zone: "Australia/Sydney"
+      }, out.location
+
+    it "looks up address with subdivisions (an array)", ->
+      out = assert db\lookup "173.255.250.29"
+      assert.same {
+        {
+          names: {
+            "en": "California"
+            "zh-CN": "加利福尼亚州"
+            "fr": "Californie"
+            "ru": "Калифорния"
+            "es": "California"
+            "pt-BR": "Califórnia"
+            "de": "Kalifornien"
+            "ja": "カリフォルニア州"
+          }
+          iso_code: "CA"
+          geoname_id: 5332921
+        }
+      }, out.subdivisions
+
+      assert.same "94536", out.postal.code
+
