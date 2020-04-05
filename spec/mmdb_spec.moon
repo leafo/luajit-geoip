@@ -84,6 +84,20 @@ describe "mmdb", ->
         }
       }, out
 
+    describe "lookup_value", ->
+      it "looks up string value", ->
+        res = assert db\lookup_value "8.8.8.8", "country", "iso_code"
+        assert.same "US", res
+
+      it "looks up number value", ->
+        res = assert db\lookup_value "8.8.8.8", "continent", "geoname_id"
+        assert.same 6255149, res
+
+      it "handles looking up invalid path", ->
+        assert.same {nil, "failed to find field by path"}, {
+          db\lookup_value "8.8.8.8", "continent", "fart"
+        }
+
   describe "city_db", ->
     local db
     before_each ->
