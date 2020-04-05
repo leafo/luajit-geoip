@@ -161,6 +161,10 @@ ffi.cdef([[  const char *gai_strerror(int ecode);
 
   extern void MMDB_free_entry_data_list(
       MMDB_entry_data_list_s *const entry_data_list);
+
+  extern int MMDB_get_value(MMDB_entry_s *const start,
+                            MMDB_entry_data_s *const entry_data,
+                            ...);
 ]])
 local lib = ffi.load("libmaxminddb")
 local consume_map, consume_array
@@ -242,7 +246,7 @@ do
       ffi.gc(self.mmdb, ffi.MMDB_close)
       return true
     end,
-    lookup = function(self, ip)
+    _lookup_string = function(self, ip)
       assert(self.mmdb, "mmdb database is not loaded")
       local gai_error = ffi.new("int[1]")
       local mmdb_error = ffi.new("int[1]")
@@ -255,6 +259,36 @@ do
       end
       if not (res.found_entry) then
         return nil, "failed to find entry"
+      end
+      return res
+    end,
+    lookup_value = function(self, ip, ...)
+      local path = {
+        ...
+      }
+      table.insert(path, 0)
+      local res, err = self:_lookup_string(ip)
+      if not (res) then
+        return nil, err
+      end
+      local entry_data = ffi.new("MMDB_entry_data_s")
+      local status = lib.MMDB_get_value(res.entry, entry_data, unpack(path))
+      if MMDB_SUCCESS ~= status then
+        return nil, "failed to find field by path"
+      end
+      if entry_data.has_data then
+        local value = assert(consume_value({
+          entry_data = entry_data
+        }))
+        return value
+      else
+        return nil, "entry has no data"
+      end
+    end,
+    lookup = function(self, ip)
+      local res, err = self:_lookup_string(ip)
+      if not (res) then
+        return nil, err
       end
       local entry_data_list = ffi.new("MMDB_entry_data_list_s*[1]")
       local status = lib.MMDB_get_entry_data_list(res.entry, entry_data_list)

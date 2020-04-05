@@ -160,6 +160,10 @@ ffi.cdef [[
 
   extern void MMDB_free_entry_data_list(
       MMDB_entry_data_list_s *const entry_data_list);
+
+  extern int MMDB_get_value(MMDB_entry_s *const start,
+                            MMDB_entry_data_s *const entry_data,
+                            ...);
 ]]
 
 lib = ffi.load "libmaxminddb"
@@ -248,7 +252,7 @@ class Mmdb
     ffi.gc @mmdb, ffi.MMDB_close
     true
 
-  lookup: (ip) =>
+  _lookup_string: (ip) =>
     assert @mmdb, "mmdb database is not loaded"
 
     gai_error = ffi.new "int[1]"
@@ -264,6 +268,38 @@ class Mmdb
 
     unless res.found_entry
       return nil, "failed to find entry"
+
+    res
+
+  lookup_value: (ip, ...) =>
+    path = {...}
+    table.insert path, 0
+
+    res, err = @_lookup_string ip
+    unless res
+      return nil, err
+
+    entry_data = ffi.new "MMDB_entry_data_s"
+
+    status = lib.MMDB_get_value res.entry, entry_data, unpack path
+
+    if MMDB_SUCCESS != status
+      return nil, "failed to find field by path"
+
+    if entry_data.has_data
+      value = assert consume_value {
+        :entry_data
+      }
+
+      value
+    else
+      nil, "entry has no data"
+
+  lookup: (ip) =>
+    res, err = @_lookup_string ip
+
+    unless res
+      return nil, err
 
     entry_data_list = ffi.new "MMDB_entry_data_list_s*[1]"
 
