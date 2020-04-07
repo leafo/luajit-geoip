@@ -27,9 +27,6 @@ The module is named `geoip.mmdb`
 local geoip = require "geoip.mmdb"
 ```
 
-The location of database files vary depending on the system. For this example
-we'll use `/usr/share/GeoIP/GeoLite2-Country.mmdb` for the country database.
-
 This module works great in OpenResty, no special considerations need to be
 made.
 
@@ -37,6 +34,11 @@ made.
 
 Load the database from the file path. Returns `nil` and error message if the
 database could not be loaded.
+
+The location of database files vary depending on the system and type of
+database. For this example we'll use the country database located at
+`/usr/share/GeoIP/GeoLite2-Country.mmdb`.
+
 
 ```lua
 local mmdb = assert(geoip.load_database("/usr/share/GeoIP/GeoLite2-Country.mmdb"))
