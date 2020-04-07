@@ -6,6 +6,16 @@ asnum_db = "/usr/share/GeoIP/GeoLite2-ASN.mmdb"
 mmdb = require "geoip.mmdb"
 
 describe "mmdb", ->
+  it "handles invalid database path", ->
+    assert.same {nil, "failed to load db: hello.world.db"}, {
+      mmdb.load_database "hello.world.db"
+    }
+
+  it "handles invalid database file", ->
+    assert.same {nil, "failed to load db: README.md"}, {
+      mmdb.load_database "README.md"
+    }
+
   describe "asnum_db", ->
     local db
     before_each ->
