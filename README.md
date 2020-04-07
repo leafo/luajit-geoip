@@ -1,14 +1,14 @@
 
-# LuaJIT bindings to the C MaxMind GeoIP and GeoIP2 (libmaxminddb) libraries
+# LuaJIT bindings to MaxMind's GeoIP and GeoIP2 (libmaxminddb) libraries
 
 * https://github.com/maxmind/libmaxminddb
 * https://github.com/maxmind/geoip-api-c &mdash; legacy library
 
-In order to use this library you'll need LuaJIT, the geoip library you're
+In order to use this library you'll need LuaJIT, the GeoIP library you're
 trying to use, and the databases files for the appropriate library. You should
 be able to find these in your package manager.
 
-**I recommend using libmaxminddb**, as the legacy geoip databases are no
+**I recommend using libmaxminddb**, as the legacy GeoIP databases are no
 longer updated.
 
 ## Install
@@ -17,8 +17,7 @@ longer updated.
 luarocks install --server=http://luarocks.org/manifests/leafo geoip
 ```
 
-## Reference
-
+# Reference
 
 ## libmaxminddb
 
@@ -31,6 +30,8 @@ local geoip = require "geoip.mmdb"
 The location of database files vary depending on the system. For this example
 we'll use `/usr/share/GeoIP/GeoLite2-Country.mmdb` for the country database.
 
+This module works great in OpenResty, no special considerations need to be
+made.
 
 ### `db, err = load_database(file_name)`
 
@@ -48,7 +49,9 @@ The database object has the following methods:
 
 ```
 local result = assert(mmdb:lookup("8.8.8.8"))
-print(result.country.iso_code) -- print the country code
+
+-- print the country code 
+print(result.country.iso_code) --> US
 ```
 
 Look up an address (as a string), and return all data about it as a Lua table.
@@ -65,7 +68,7 @@ check)
 
 ```
 -- prints the country code
-print(assert(mmdb:lookup_value("8.8.8.8", "country", "iso_code")))
+print(assert(mmdb:lookup_value("8.8.8.8", "country", "iso_code"))) --> US
 ```
 
 Looks up a single value for an address using the path specified in the varargs
@@ -76,6 +79,9 @@ database is needed.
 
 
 ## geoip &mdash; legacy
+
+*The databases for this library are no longer updated, I strongly recommend
+using the mmdb functionality above*
 
 The module is named `geoip`
 
