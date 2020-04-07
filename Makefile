@@ -10,8 +10,11 @@ local: build
 build:
 	moonc geoip
 
-valgrind:
-	valgrind --leak-check=yes --trace-children=yes busted
+valgrind_geoip:
+	valgrind --leak-check=yes --trace-children=yes busted spec/geoip_spec.moon
+
+valgrind_mmdb:
+	valgrind --leak-check=yes --trace-children=yes busted spec/mmdb_spec.moon
 
 lint::
 	git ls-files | grep '\.moon$$' | xargs -n 100 moonc -l
