@@ -1,4 +1,3 @@
-local VERSION = "1.0.0"
 local ffi = require("ffi")
 local bit = require("bit")
 ffi.cdef([[  typedef struct GeoIP {} GeoIP;
@@ -169,5 +168,5 @@ return {
       return _fn_0(_base_0, ...)
     end
   end)(),
-  VERSION = VERSION
+  VERSION = require("geoip.version")
 }

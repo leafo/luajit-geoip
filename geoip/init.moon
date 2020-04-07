@@ -1,5 +1,3 @@
-VERSION = "1.0.0"
-
 ffi = require "ffi"
 bit = require "bit"
 
@@ -112,6 +110,6 @@ class GeoIP
 {
   :GeoIP
   lookup_addr: GeoIP!\lookup_addr
-  :VERSION
+  VERSION: require "geoip.version"
 }
 

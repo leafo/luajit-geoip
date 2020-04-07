@@ -334,6 +334,7 @@ load_database = function(filename)
   return mmdb
 end
 return {
+  Mmdb = Mmdb,
   load_database = load_database,
-  Mmdb = Mmdb
+  VERSION = require("geoip.version")
 }

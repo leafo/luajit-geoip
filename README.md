@@ -130,6 +130,11 @@ local res = gi:lookup_addr("8.8.8.8")
 > By default the STANDARD mode is used, which reads from disk for each lookup
 
 
+# Version history
+
+* **2.0** *(Apr 6, 2020)* &mdash; Support for mmdb (libmaxminddb), fix memory leak in geoip
+* **1.0** *(Apr 4, 2018)* &mdash; Initial release, support for geoip
+
 # Contact
 
 License: MIT, Copyright 2020

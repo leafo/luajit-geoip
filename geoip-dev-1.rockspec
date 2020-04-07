@@ -19,5 +19,7 @@ build = {
   type = "builtin",
   modules = {
 		["geoip"] = "geoip/init.lua",
+		["geoip.mmdb"] = "geoip/mmdb.lua",
+		["geoip.version"] = "geoip/version.lua",
   }
 }

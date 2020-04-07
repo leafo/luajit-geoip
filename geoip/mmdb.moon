@@ -329,4 +329,8 @@ load_database = (filename) ->
     return nil, err
   mmdb
 
-{ :load_database, :Mmdb }
+{
+  :Mmdb
+  :load_database
+  VERSION: require "geoip.version"
+}
