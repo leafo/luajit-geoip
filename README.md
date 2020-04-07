@@ -27,8 +27,42 @@ The module is named `geoip.mmdb`
 local geoip = require "geoip.mmdb"
 ```
 
-This module works great in OpenResty, no special considerations need to be
-made.
+This module works great in OpenResty. You'll want to keep references to loaded
+GeoIP DB objects at the module level, in order avoid reloading the DB on every
+request. 
+
+<details>
+
+<summary>See OpenResty example</summary>
+
+Create a new module for your GeoIP databases:
+
+**`geoip_helper.lua`**
+
+```lua
+local geoip = require "geoip.mmdb"
+
+return {
+  country_db = assert(geoip.load_database("/var/lib/GeoIP/GeoLite2-Country.mmdb")),
+  -- load more databases if necessary:
+  -- asnum_db = ...
+  -- etc.
+}
+```
+
+**You OpenResty request handler:**
+
+```lua
+-- this module will be cached in `package.loaded`, and the databases will only be loaded on first access
+local result = require("geoip_helper").country_db.lookup_addr(ngx.var.remote_addr)
+ngx.say("Your country:" .. result.country.iso_code)
+```
+
+> **Note:** If you're using a proxy with x-forwarded-for you'll need to adjust
+> how you access the user's IP address
+
+</details>
+
 
 ### `db, err = load_database(file_name)`
 
