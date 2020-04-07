@@ -49,7 +49,7 @@ The database object has the following methods:
 
 ### `object, err = mmdb:lookup(address)`
 
-```
+```lua
 local result = assert(mmdb:lookup("8.8.8.8"))
 
 -- print the country code 
@@ -68,7 +68,7 @@ check)
 
 ### `value, err = mmdb:lookup_value(address, ...)`
 
-```
+```lua
 -- prints the country code
 print(assert(mmdb:lookup_value("8.8.8.8", "country", "iso_code"))) --> US
 ```
