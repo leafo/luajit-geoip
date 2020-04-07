@@ -172,7 +172,7 @@ local consume_map, consume_array
 
 consume_value = (current) ->
   if current == nil
-    return nil, "current is empty"
+    return nil, "expected value but go nothing"
 
   entry_data = current.entry_data
 
@@ -249,7 +249,7 @@ class Mmdb
     unless res == MMDB_SUCCESS
       return nil, "failed to load db: #{@file_path}"
 
-    ffi.gc @mmdb, ffi.MMDB_close
+    ffi.gc @mmdb, (assert lib.MMDB_close, "missing destructor")
     true
 
   _lookup_string: (ip) =>
@@ -272,6 +272,7 @@ class Mmdb
     res
 
   lookup_value: (ip, ...) =>
+    assert (...), "missing path"
     path = {...}
     table.insert path, 0
 
@@ -287,6 +288,12 @@ class Mmdb
       return nil, "failed to find field by path"
 
     if entry_data.has_data
+      -- the node we get don't have the data so we have to bail if path leads
+      -- to a map or array
+      switch entry_data.type
+        when DATA_TYPES.MMDB_DATA_TYPE_MAP, DATA_TYPES.MMDB_DATA_TYPE_ARRAY
+          return nil, "path holds object, not value"
+
       value = assert consume_value {
         :entry_data
       }
@@ -308,10 +315,10 @@ class Mmdb
     unless status == MMDB_SUCCESS
       return nil, "failed to load data: #{ffi.string lib.MMDB_strerror status}"
 
+    ffi.gc entry_data_list[0], (assert lib.MMDB_free_entry_data_list, "missing destructor")
+
     current = entry_data_list[0]
     value = assert consume_value current
-
-    lib.MMDB_free_entry_data_list entry_data_list[0]
 
     value
 

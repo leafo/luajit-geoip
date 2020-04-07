@@ -171,7 +171,7 @@ local consume_map, consume_array
 local consume_value
 consume_value = function(current)
   if current == nil then
-    return nil, "current is empty"
+    return nil, "expected value but go nothing"
   end
   local entry_data = current.entry_data
   local _exp_0 = entry_data.type
@@ -243,7 +243,7 @@ do
       if not (res == MMDB_SUCCESS) then
         return nil, "failed to load db: " .. tostring(self.file_path)
       end
-      ffi.gc(self.mmdb, ffi.MMDB_close)
+      ffi.gc(self.mmdb, (assert(lib.MMDB_close, "missing destructor")))
       return true
     end,
     _lookup_string = function(self, ip)
@@ -263,6 +263,7 @@ do
       return res
     end,
     lookup_value = function(self, ip, ...)
+      assert((...), "missing path")
       local path = {
         ...
       }
@@ -277,6 +278,10 @@ do
         return nil, "failed to find field by path"
       end
       if entry_data.has_data then
+        local _exp_0 = entry_data.type
+        if DATA_TYPES.MMDB_DATA_TYPE_MAP == _exp_0 or DATA_TYPES.MMDB_DATA_TYPE_ARRAY == _exp_0 then
+          return nil, "path holds object, not value"
+        end
         local value = assert(consume_value({
           entry_data = entry_data
         }))
@@ -295,9 +300,9 @@ do
       if not (status == MMDB_SUCCESS) then
         return nil, "failed to load data: " .. tostring(ffi.string(lib.MMDB_strerror(status)))
       end
+      ffi.gc(entry_data_list[0], (assert(lib.MMDB_free_entry_data_list, "missing destructor")))
       local current = entry_data_list[0]
       local value = assert(consume_value(current))
-      lib.MMDB_free_entry_data_list(entry_data_list[0])
       return value
     end
   }
