@@ -98,6 +98,22 @@ describe "mmdb", ->
           db\lookup_value "8.8.8.8", "continent", "fart"
         }
 
+      it "handles missing path", ->
+        assert.has_error(
+          -> db\lookup_value "8.8.8.8"
+          "missing path"
+        )
+
+      it "handles invalid root", ->
+        assert.same {nil, "failed to find field by path"}, {
+          db\lookup_value "8.8.8.8", "butt"
+        }
+
+      it "returning object field", ->
+        assert.same {nil, "path holds object, not value"}, {
+          db\lookup_value "8.8.8.8", "continent"
+        }
+
   describe "city_db", ->
     local db
     before_each ->
