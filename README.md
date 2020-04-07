@@ -50,12 +50,14 @@ return {
 }
 ```
 
-**You OpenResty request handler:**
+**OpenResty request handler:**
 
 ```lua
 -- this module will be cached in `package.loaded`, and the databases will only be loaded on first access
 local result = require("geoip_helper").country_db.lookup_addr(ngx.var.remote_addr)
-ngx.say("Your country:" .. result.country.iso_code)
+if result then
+  ngx.say("Your country:" .. result.country.iso_code)
+end
 ```
 
 > **Note:** If you're using a proxy with x-forwarded-for you'll need to adjust
