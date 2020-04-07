@@ -327,7 +327,10 @@ end
 local load_database
 load_database = function(filename)
   local mmdb = Mmdb(filename)
-  mmdb:load()
+  local success, err = mmdb:load()
+  if not (success) then
+    return nil, err
+  end
   return mmdb
 end
 return {

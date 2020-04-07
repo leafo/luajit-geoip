@@ -324,7 +324,9 @@ class Mmdb
 
 load_database = (filename) ->
   mmdb = Mmdb filename
-  mmdb\load!
+  success, err = mmdb\load!
+  unless success
+    return nil, err
   mmdb
 
 { :load_database, :Mmdb }
