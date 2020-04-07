@@ -1,7 +1,7 @@
 
-country_db = "/usr/share/GeoIP/GeoLite2-Country.mmdb"
-city_db = "/usr/share/GeoIP/GeoLite2-City.mmdb"
-asnum_db = "/usr/share/GeoIP/GeoLite2-ASN.mmdb"
+country_db = "/var/lib/GeoIP/GeoLite2-Country.mmdb"
+city_db = "/var/lib/GeoIP/GeoLite2-City.mmdb"
+asnum_db = "/var/lib/GeoIP/GeoLite2-ASN.mmdb"
 
 mmdb = require "geoip.mmdb"
 
@@ -24,7 +24,7 @@ describe "mmdb", ->
     it "looks up address", ->
       out = assert db\lookup "1.1.1.1"
       assert.same {
-        autonomous_system_organization: "Cloudflare, Inc."
+        autonomous_system_organization: "CLOUDFLARENET"
         autonomous_system_number: 13335
       }, out
 
@@ -39,7 +39,7 @@ describe "mmdb", ->
     it "looks up ipv6", ->
       assert.same {
         autonomous_system_number: 15169
-        autonomous_system_organization: "Google LLC"
+        autonomous_system_organization: "GOOGLE"
       }, db\lookup "2001:4860:4860::8888"
 
   describe "country_db", ->

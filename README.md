@@ -37,11 +37,11 @@ database could not be loaded.
 
 The location of database files vary depending on the system and type of
 database. For this example we'll use the country database located at
-`/usr/share/GeoIP/GeoLite2-Country.mmdb`.
+`/var/lib/GeoIP/GeoLite2-Country.mmdb`.
 
 
 ```lua
-local mmdb = assert(geoip.load_database("/usr/share/GeoIP/GeoLite2-Country.mmdb"))
+local mmdb = assert(geoip.load_database("/var/lib/GeoIP/GeoLite2-Country.mmdb"))
 ```
 
 The database object has the following methods:
