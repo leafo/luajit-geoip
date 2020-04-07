@@ -3,7 +3,6 @@ VERSION = "1.0.0"
 ffi = require "ffi"
 bit = require "bit"
 
-
 ffi.cdef [[
   typedef struct GeoIP {} GeoIP;
 
@@ -71,7 +70,7 @@ class GeoIP
 
       gi = lib.GeoIP_open_type i, bit.bor mode, lib.GEOIP_SILENCE
       continue if gi == nil
-      ffi.gc gi, ffi.GeoIP_delete
+      ffi.gc gi, (assert lib.GeoIP_delete, "missing destructor")
       lib.GeoIP_set_charset gi, lib.GEOIP_CHARSET_UTF8
 
       {

@@ -80,7 +80,7 @@ do
               _continue_0 = true
               break
             end
-            ffi.gc(gi, ffi.GeoIP_delete)
+            ffi.gc(gi, (assert(lib.GeoIP_delete, "missing destructor")))
             lib.GeoIP_set_charset(gi, lib.GEOIP_CHARSET_UTF8)
             local _value_0 = {
               type = i,
