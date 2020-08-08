@@ -198,7 +198,9 @@ consume_value = function(current)
     local value = entry_data.double_value
     return value, current.next
   elseif DATA_TYPES.MMDB_DATA_TYPE_BOOLEAN == _exp_0 then
-    return entry_data.boolean, current.next
+    assert(entry_data.boolean ~= nil)
+    local value = entry_data.boolean
+    return value, current.next
   else
     error("unknown type: " .. tostring(DATA_TYPES[entry_data.type]))
     return nil, current.next
@@ -214,7 +216,6 @@ consume_map = function(current)
     key, current = assert(consume_value(current))
     local value
     value, current = consume_value(current)
-    assert(value ~= nil)
     out[key] = value
     tuple_count = tuple_count - 1
   end
