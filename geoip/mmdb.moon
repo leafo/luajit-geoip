@@ -200,8 +200,7 @@ consume_value = (current) ->
       value = entry_data.double_value
       value, current.next
     when DATA_TYPES.MMDB_DATA_TYPE_BOOLEAN
-      value = entry_data.boolean == 1
-      value, current.next
+      entry_data.boolean, current.next
     else
       error "unknown type: #{DATA_TYPES[entry_data.type]}"
       nil, current.next

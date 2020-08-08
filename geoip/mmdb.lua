@@ -198,8 +198,7 @@ consume_value = function(current)
     local value = entry_data.double_value
     return value, current.next
   elseif DATA_TYPES.MMDB_DATA_TYPE_BOOLEAN == _exp_0 then
-    local value = entry_data.boolean == 1
-    return value, current.next
+    return entry_data.boolean, current.next
   else
     error("unknown type: " .. tostring(DATA_TYPES[entry_data.type]))
     return nil, current.next
