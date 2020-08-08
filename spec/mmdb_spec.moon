@@ -94,6 +94,55 @@ describe "mmdb", ->
         }
       }, out
 
+    it "looks up EU address 212.237.134.97", ->
+      out = assert db\lookup "212.237.134.97"
+      assert.same {
+        continent: {
+          code: 'EU'
+          geoname_id: 6255148
+          names: {
+            "de": 'Europa'
+            "en": 'Europe'
+            "es": 'Europa'
+            "fr": 'Europe'
+            "ja": 'ヨーロッパ'
+            "pt-BR": 'Europa'
+            "ru": 'Европа'
+            "zh-CN": '欧洲'
+          }
+        }
+        country: {
+          geoname_id: 2623032
+          is_in_european_union: true
+          iso_code: 'DK'
+          names: {
+            "de": 'Dänemark'
+            "en": 'Denmark'
+            "es": 'Dinamarca'
+            "fr": 'Danemark'
+            "ja": 'デンマーク王国'
+            "pt-BR": 'Dinamarca'
+            "ru": 'Дания'
+            "zh-CN": '丹麦'
+          }
+        }
+        registered_country: {
+          geoname_id: 2623032
+          is_in_european_union: true
+          iso_code: 'DK'
+          names: {
+            "de": 'Dänemark'
+            "en": 'Denmark'
+            "es": 'Dinamarca'
+            "fr": 'Danemark'
+            "ja": 'デンマーク王国'
+            "pt-BR": 'Dinamarca'
+            "ru": 'Дания'
+            "zh-CN": '丹麦'
+          }
+        }
+      }, out
+
     describe "lookup_value", ->
       it "looks up string value", ->
         res = assert db\lookup_value "8.8.8.8", "country", "iso_code"
