@@ -213,7 +213,8 @@ consume_map = function(current)
     local key
     key, current = assert(consume_value(current))
     local value
-    value, current = assert(consume_value(current))
+    value, current = consume_value(current)
+    assert(value ~= nil)
     out[key] = value
     tuple_count = tuple_count - 1
   end
