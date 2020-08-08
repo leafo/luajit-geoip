@@ -200,7 +200,9 @@ consume_value = (current) ->
       value = entry_data.double_value
       value, current.next
     when DATA_TYPES.MMDB_DATA_TYPE_BOOLEAN
-      entry_data.boolean, current.next
+      assert entry_data.boolean ~= nil
+      value = entry_data.boolean
+      value, current.next
     else
       error "unknown type: #{DATA_TYPES[entry_data.type]}"
       nil, current.next
@@ -217,7 +219,6 @@ consume_map = (current) ->
   while tuple_count > 0
     key, current = assert consume_value current
     value, current = consume_value current
-    assert value ~= nil
     out[key] = value
     tuple_count -= 1
 
