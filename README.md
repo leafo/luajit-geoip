@@ -176,6 +176,8 @@ local res = gi:lookup_addr("8.8.8.8")
 
 # Version history
 
+
+* **2.1** *(Aug 28, 2020)* &mdash; Fix bug with parsing booleans from mmdb ([#3](https://github.com/leafo/luajit-geoip/pull/3)) michaeljmartin 
 * **2.0** *(Apr 6, 2020)* &mdash; Support for mmdb (libmaxminddb), fix memory leak in geoip
 * **1.0** *(Apr 4, 2018)* &mdash; Initial release, support for geoip
 
