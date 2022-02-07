@@ -54,7 +54,7 @@ return {
 
 ```lua
 -- this module will be cached in `package.loaded`, and the databases will only be loaded on first access
-local result = require("geoip_helper").country_db.lookup_addr(ngx.var.remote_addr)
+local result = require("geoip_helper").country_db:lookup(ngx.var.remote_addr)
 if result then
   ngx.say("Your country:" .. result.country.iso_code)
 end
