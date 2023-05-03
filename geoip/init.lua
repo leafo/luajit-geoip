@@ -15,6 +15,8 @@ ffi.cdef([[  typedef struct GeoIP {} GeoIP;
     GEOIP_COUNTRY_EDITION = 1,
     GEOIP_CITY_EDITION_REV1 = 2,
     GEOIP_ASNUM_EDITION = 9,
+    GEOIP_COUNTRY_EDITION_V6 = 12,
+    GEOIP_ASNUM_EDITION_V6 = 21,
   } GeoIPDBTypes;
 
   typedef enum {
@@ -34,7 +36,9 @@ ffi.cdef([[  typedef struct GeoIP {} GeoIP;
   unsigned long _GeoIP_lookupaddress(const char *host);
 
   char *GeoIP_name_by_addr(GeoIP * gi, const char *addr);
+  char *GeoIP_name_by_addr_v6(GeoIP * gi, const char *addr);
   int GeoIP_id_by_addr(GeoIP * gi, const char *addr);
+  int GeoIP_id_by_addr_v6(GeoIP * gi, const char *addr);
 
   unsigned GeoIP_num_countries(void);
   const char * GeoIP_code_by_id(int id);
@@ -43,7 +47,9 @@ ffi.cdef([[  typedef struct GeoIP {} GeoIP;
 local lib = ffi.load("GeoIP")
 local DATABASE_TYPES = {
   lib.GEOIP_COUNTRY_EDITION,
-  lib.GEOIP_ASNUM_EDITION
+  lib.GEOIP_ASNUM_EDITION,
+  lib.GEOIP_COUNTRY_EDITION_V6,
+  lib.GEOIP_ASNUM_EDITION_V6
 }
 local CACHE_TYPES = {
   standard = lib.GEOIP_STANDARD,
@@ -126,11 +132,21 @@ do
             out.country_code, out.country_name = self:country_by_id(gi, cid)
           elseif lib.GEOIP_ASNUM_EDITION == _exp_0 then
             local asnum = lib.GeoIP_name_by_addr(gi, ip)
-            if asnum == nil then
+            if asnum ~= nil then
+              out.asnum = ffi.string(asnum)
               _continue_0 = true
               break
             end
-            out.asnum = ffi.string(asnum)
+          elseif lib.GEOIP_COUNTRY_EDITION_V6 == _exp_0 then
+            if out.country_code == nil then
+              local cid = lib.GeoIP_id_by_addr_v6(gi, ip)
+              out.country_code, out.country_name = self:country_by_id(gi, cid)
+            end
+          elseif lib.GEOIP_ASNUM_EDITION_V6 == _exp_0 then
+            local asnum = lib.GeoIP_name_by_addr_v6(gi, ip)
+            if asnum ~= nil then
+              out.asnum = ffi.string(asnum)
+            end
           end
           _continue_0 = true
         until true
