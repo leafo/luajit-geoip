@@ -17,6 +17,8 @@ ffi.cdef [[
     GEOIP_COUNTRY_EDITION = 1,
     GEOIP_CITY_EDITION_REV1 = 2,
     GEOIP_ASNUM_EDITION = 9,
+    GEOIP_COUNTRY_EDITION_V6 = 12,
+    GEOIP_ASNUM_EDITION_V6 = 21,
   } GeoIPDBTypes;
 
   typedef enum {
@@ -36,7 +38,9 @@ ffi.cdef [[
   unsigned long _GeoIP_lookupaddress(const char *host);
 
   char *GeoIP_name_by_addr(GeoIP * gi, const char *addr);
+  char *GeoIP_name_by_addr_v6(GeoIP * gi, const char *addr);
   int GeoIP_id_by_addr(GeoIP * gi, const char *addr);
+  int GeoIP_id_by_addr_v6(GeoIP * gi, const char *addr);
 
   unsigned GeoIP_num_countries(void);
   const char * GeoIP_code_by_id(int id);
@@ -48,6 +52,8 @@ lib = ffi.load "GeoIP"
 DATABASE_TYPES = {
   lib.GEOIP_COUNTRY_EDITION
   lib.GEOIP_ASNUM_EDITION
+  lib.GEOIP_COUNTRY_EDITION_V6
+  lib.GEOIP_ASNUM_EDITION_V6
 }
 
 CACHE_TYPES = {
@@ -102,8 +108,16 @@ class GeoIP
           out.country_code, out.country_name = @country_by_id gi, cid
         when lib.GEOIP_ASNUM_EDITION
           asnum = lib.GeoIP_name_by_addr gi, ip
-          continue if asnum == nil
-          out.asnum = ffi.string asnum
+          if asnum != nil
+            out.asnum = ffi.string asnum
+            continue
+        when lib.GEOIP_COUNTRY_EDITION_V6
+            if out.country_code == nil
+              cid = lib.GeoIP_id_by_addr_v6 gi, ip
+              out.country_code, out.country_name = @country_by_id gi, cid
+        when lib.GEOIP_ASNUM_EDITION_V6
+          asnum = lib.GeoIP_name_by_addr_v6 gi, ip
+          out.asnum = ffi.string asnum if asnum != nil
 
     out if next out
 
@@ -112,4 +126,3 @@ class GeoIP
   lookup_addr: GeoIP!\lookup_addr
   VERSION: require "geoip.version"
 }
-
